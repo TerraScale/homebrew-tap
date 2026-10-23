@@ -1,0 +1,49 @@
+name: Sync formula
+# Pulls the formula that each ts-go release generates, so the tap needs no
+# cross-repository token: this workflow writes only to this repository.
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: sync-formula
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: Fetch latest release formula
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag=$(gh release view --repo TerraScale/ts-go --json tagName -q .tagName)
+          [[ "$tag" =~ ^v0\.0\.(0|[1-9][0-9]*)$ ]]
+          dir="$RUNNER_TEMP/release"
+          gh release download "$tag" --repo TerraScale/ts-go --pattern ts.rb --pattern checksums.txt --dir "$dir"
+          grep -qx "  version \"${tag#v}\"" "$dir/ts.rb"
+          # Every URL must be a release asset of this tag with its published checksum.
+          urls=$(grep -oE 'url "[^"]+"' "$dir/ts.rb" | cut -d'"' -f2)
+          [ -n "$urls" ]
+          for url in $urls; do
+            case "$url" in "https://github.com/TerraScale/ts-go/releases/download/$tag/"*) ;; *) exit 1 ;; esac
+            name=${url##*/}
+            sum=$(awk -v n="$name" '$2 == n { print $1 }' "$dir/checksums.txt")
+            [ -n "$sum" ]
+            grep -q "sha256 \"$sum\"" "$dir/ts.rb"
+          done
+          ruby -c "$dir/ts.rb"
+          mkdir -p Formula
+          cp "$dir/ts.rb" Formula/ts.rb
+          echo "TAG=$tag" >> "$GITHUB_ENV"
+      - name: Commit formula
+        run: |
+          git add Formula/ts.rb
+          git diff --cached --quiet && exit 0
+          git config user.name 'TerraScale'
+          git config user.email 'releases@terrascale.tech'
+          git commit -m "Update ts to ${TAG#v}"
+          git push
