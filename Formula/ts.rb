@@ -5,21 +5,21 @@
 class Ts < Formula
   desc "TerraScale CLI"
   homepage "https://terrascale.tech"
-  version "0.0.7"
+  version "0.0.9"
   license "Apache-2.0"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/TerraScale/ts-go/releases/download/v0.0.7/ts_darwin_amd64.tar.gz"
-      sha256 "bd47de732a5692605ef4bdf5e54ba6a88f094698450b0d67567e9e8f30838781"
+      url "https://github.com/TerraScale/ts-go/releases/download/v0.0.9/ts_darwin_amd64.tar.gz"
+      sha256 "268fcde1c4d8d21429fe8da9effa06176ed9cefec1151e02a1d5323d1a41c1ed"
 
       define_method(:install) do
         bin.install "ts"
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/TerraScale/ts-go/releases/download/v0.0.7/ts_darwin_arm64.tar.gz"
-      sha256 "0c693ff2948c8fe270e4a1aa722c336adb67dda3eaae0bdb04af3e2e1cf5d2ae"
+      url "https://github.com/TerraScale/ts-go/releases/download/v0.0.9/ts_darwin_arm64.tar.gz"
+      sha256 "005aaa4734067d95fdb3452f9eb495ea38531d3aa8ce7b61aa861b504f1e7362"
 
       define_method(:install) do
         bin.install "ts"
@@ -29,15 +29,15 @@ class Ts < Formula
 
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "https://github.com/TerraScale/ts-go/releases/download/v0.0.7/ts_linux_amd64.tar.gz"
-      sha256 "32af7b207738fba7ebf2c8417a40700b050e7f04365ccd30fe44dd7a11b21528"
+      url "https://github.com/TerraScale/ts-go/releases/download/v0.0.9/ts_linux_amd64.tar.gz"
+      sha256 "54f1527d358cd83a0ced97db362e8739b035eca254357c47a1ec3b695e1b88c3"
       define_method(:install) do
         bin.install "ts"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/TerraScale/ts-go/releases/download/v0.0.7/ts_linux_arm64.tar.gz"
-      sha256 "57a0bf7496ec203898d40bb0e31f542ce2bb29f7ff4cd4d0e6a346be747a36e5"
+      url "https://github.com/TerraScale/ts-go/releases/download/v0.0.9/ts_linux_arm64.tar.gz"
+      sha256 "655f4c848b9ebd6bf4c327c748b0d8373678bfda3dc77079b3aca16ab4a28886"
       define_method(:install) do
         bin.install "ts"
       end
