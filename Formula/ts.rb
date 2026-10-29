@@ -10,7 +10,7 @@ class Ts < Formula
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/TerraScale/ts-go/releases/download/v0.0.10/ts_darwin_amd64.tar.gz"
+      url "https://github.com/TerraScale/terrascale/releases/download/sdk/go/v0.0.10/ts_darwin_amd64.tar.gz"
       sha256 "51cc5ec2ffeed8b4558c491e2e671a789fe5a08e625a4e18f518753797ed4b84"
 
       define_method(:install) do
@@ -18,7 +18,7 @@ class Ts < Formula
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/TerraScale/ts-go/releases/download/v0.0.10/ts_darwin_arm64.tar.gz"
+      url "https://github.com/TerraScale/terrascale/releases/download/sdk/go/v0.0.10/ts_darwin_arm64.tar.gz"
       sha256 "afbcda7d42d043a0ab6ad480f26c95486dc1e832d971c65489157bfdb96c4230"
 
       define_method(:install) do
@@ -29,14 +29,14 @@ class Ts < Formula
 
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "https://github.com/TerraScale/ts-go/releases/download/v0.0.10/ts_linux_amd64.tar.gz"
+      url "https://github.com/TerraScale/terrascale/releases/download/sdk/go/v0.0.10/ts_linux_amd64.tar.gz"
       sha256 "933c47a78cd43beef2874605a5ba58c927f4db88596e5a89f4ae1ee7cbae1c98"
       define_method(:install) do
         bin.install "ts"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/TerraScale/ts-go/releases/download/v0.0.10/ts_linux_arm64.tar.gz"
+      url "https://github.com/TerraScale/terrascale/releases/download/sdk/go/v0.0.10/ts_linux_arm64.tar.gz"
       sha256 "1ce546890214d6841044df1279b8ed2eb6efe5d7cdc5cb75b889681c246fdb29"
       define_method(:install) do
         bin.install "ts"
