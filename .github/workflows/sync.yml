@@ -1,21 +1,28 @@
 name: Sync formula
 # Pulls the formula that each ts-go release generates, so the tap needs no
 # cross-repository token: this workflow writes only to this repository.
+# The publish job commits the same candidate artifact that the test job checked.
 on:
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 concurrency:
   group: sync-formula
 jobs:
-  sync:
+  prepare:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    outputs:
+      tag: ${{ steps.fetch.outputs.tag }}
+      sha256: ${{ steps.fetch.outputs.sha256 }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
       - name: Fetch latest release formula
+        id: fetch
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -35,12 +42,48 @@ jobs:
             [ -n "$sum" ]
             grep -q "sha256 \"$sum\"" "$dir/ts.rb"
           done
-          ruby -c "$dir/ts.rb"
-          mkdir -p Formula
-          cp "$dir/ts.rb" Formula/ts.rb
-          echo "TAG=$tag" >> "$GITHUB_ENV"
+          mkdir -p candidate
+          cp "$dir/ts.rb" candidate/ts.rb
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "sha256=$(sha256sum candidate/ts.rb | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: formula-candidate
+          path: candidate/ts.rb
+          if-no-files-found: error
+          retention-days: 1
+  test:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: formula-candidate
+          path: candidate
+      - name: Validate candidate Ruby syntax
+        run: ruby -c candidate/ts.rb
+  publish:
+    needs: [prepare, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: formula-candidate
+          path: candidate
       - name: Commit formula
+        env:
+          TAG: ${{ needs.prepare.outputs.tag }}
+          SHA256: ${{ needs.prepare.outputs.sha256 }}
         run: |
+          set -euo pipefail
+          [ "$(sha256sum candidate/ts.rb | cut -d' ' -f1)" = "$SHA256" ]
+          mkdir -p Formula
+          cp candidate/ts.rb Formula/ts.rb
           git add Formula/ts.rb
           git diff --cached --quiet && exit 0
           git config user.name 'TerraScale'
