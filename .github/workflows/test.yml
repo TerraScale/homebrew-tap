@@ -10,15 +10,10 @@ concurrency:
   cancel-in-progress: true
 jobs:
   test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
-        with:
-          persist-credentials: false
-      - name: Validate formula Ruby syntax
-        run: |
-          shopt -s nullglob
-          for formula in Formula/*.rb; do
-            ruby -c "$formula"
-          done
+    uses: TerraScale/.github/.github/workflows/command.yml@3a54c0184eacdc45466c1123bca67a99db62e91c
+    with:
+      command: |
+        shopt -s nullglob
+        for formula in Formula/*.rb; do
+          ruby -c "$formula"
+        done
