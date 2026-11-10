@@ -6,7 +6,6 @@ class Ts < Formula
   desc "TerraScale CLI"
   homepage "https://terrascale.tech"
   version "0.0.42"
-  license "Apache-2.0"
 
   on_macos do
     if Hardware::CPU.intel?
