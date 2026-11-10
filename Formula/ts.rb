@@ -46,4 +46,3 @@ class Ts < Formula
   test do
     assert_equal "ts #{version}", shell_output("#{bin}/ts --version").strip
   end
-end
