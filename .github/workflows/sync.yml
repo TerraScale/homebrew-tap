@@ -28,10 +28,10 @@ jobs:
         run: |
           set -euo pipefail
           # Other monorepo areas publish releases too; select only stable Go SDK tags.
-          tag=$(gh api --paginate 'repos/TerraScale/terrascale/releases?per_page=100' \
-            --jq '.[] | select(.draft == false and .prerelease == false) | .tag_name | select(test("^sdk/go/v0\\.0\\.(0|[1-9][0-9]*)$"))' |
-            sort -V | tail -n 1)
-          [[ "$tag" =~ ^sdk/go/v0\.0\.(0|[1-9][0-9]*)$ ]]
+          tag=$(gh api --paginate --slurp 'repos/TerraScale/terrascale/releases?per_page=100' |
+            jq -er '[.[][] | select(.draft == false and .prerelease == false) | .tag_name
+              | select(test("^sdk/go/v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"))]
+              | max_by(ltrimstr("sdk/go/v") | split(".") | map(tonumber))')
           dir="$RUNNER_TEMP/release"
           gh release download "$tag" --repo TerraScale/terrascale --pattern ts.rb --pattern checksums.txt --dir "$dir"
           # Bind each platform's URL to that exact asset's checksum, not any hash in the formula.
@@ -64,9 +64,9 @@ jobs:
           assert seen == expected
           current = Path("Formula/ts.rb")
           if current.exists():
-              current_versions = re.findall(r'^  version "(0\.0\.[0-9]+)"$', current.read_text(), re.M)
+              current_versions = re.findall(r'^  version "([0-9]+\.[0-9]+\.[0-9]+)"$', current.read_text(), re.M)
               assert len(current_versions) == 1
-              assert int(version.split(".")[-1]) >= int(current_versions[0].split(".")[-1]), "Refusing formula downgrade"
+              assert tuple(map(int, version.split("."))) >= tuple(map(int, current_versions[0].split("."))), "Refusing formula downgrade"
           PYTHON
           mkdir -p candidate
           cp "$dir/ts.rb" candidate/ts.rb
