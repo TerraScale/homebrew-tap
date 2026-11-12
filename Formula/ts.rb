@@ -5,20 +5,20 @@
 class Ts < Formula
   desc "TerraScale CLI"
   homepage "https://terrascale.tech"
-  version "0.0.60"
+  version "0.0.63"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/TerraScale/terrascale/releases/download/sdk/go/v0.0.60/ts_darwin_amd64.tar.gz"
-      sha256 "0f7f3757940890bdf9b626517d60f56c571b2705e1a846ffacfc1c17b210fb40"
+      url "https://github.com/TerraScale/terrascale/releases/download/sdk/go/v0.0.63/ts_darwin_amd64.tar.gz"
+      sha256 "9a3583e389e7fe334b4e645177572d25cf30d62b04d949a4cb510337abff9dab"
 
       define_method(:install) do
         bin.install "ts"
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/TerraScale/terrascale/releases/download/sdk/go/v0.0.60/ts_darwin_arm64.tar.gz"
-      sha256 "86ace3176d80d194f51260e7c8edd23bf3a76a08b6c6a6e6994e3cd4d5f0718b"
+      url "https://github.com/TerraScale/terrascale/releases/download/sdk/go/v0.0.63/ts_darwin_arm64.tar.gz"
+      sha256 "7f92382b93a913bd34d0cc789ad3c97cb3410f2e65d9836ef681b0623d22871a"
 
       define_method(:install) do
         bin.install "ts"
@@ -28,15 +28,15 @@ class Ts < Formula
 
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "https://github.com/TerraScale/terrascale/releases/download/sdk/go/v0.0.60/ts_linux_amd64.tar.gz"
-      sha256 "8fc6f27008bc68f48fe53d730ba93c101f5f3db514f28102d28afcc810699047"
+      url "https://github.com/TerraScale/terrascale/releases/download/sdk/go/v0.0.63/ts_linux_amd64.tar.gz"
+      sha256 "6fd8f27043ccdf0fd1b684ee65fbf62b941102814fd1903439389d7248399beb"
       define_method(:install) do
         bin.install "ts"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/TerraScale/terrascale/releases/download/sdk/go/v0.0.60/ts_linux_arm64.tar.gz"
-      sha256 "74c21932e8f82664b6ecb1812160e79eb7ce4a984e65c806f2ebc1c498b4fe8f"
+      url "https://github.com/TerraScale/terrascale/releases/download/sdk/go/v0.0.63/ts_linux_arm64.tar.gz"
+      sha256 "b22abf558b35e198e4e3ae33a23a853a0a4257942533691bc5cdc670081bc9e7"
       define_method(:install) do
         bin.install "ts"
       end
